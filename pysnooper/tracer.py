@@ -225,6 +225,7 @@ class Tracer:
     def __init__(self, output=None, watch=(), watch_explode=(), depth=1,
                  prefix='', overwrite=False, thread_info=False, custom_repr=(),
                  max_variable_length=100, normalize=False, relative_time=False,
+                 seperated_prefix_each_call=True,
                  color=True):
         self._write = get_write_function(output, overwrite)
 
@@ -281,6 +282,8 @@ class Tracer:
             self._STYLE_NORMAL = ''
             self._STYLE_RESET_ALL = ''
 
+        self.seperated_prefix_each_call = seperated_prefix_each_call 
+
     def __call__(self, function_or_class):
         if DISABLED:
             return function_or_class
@@ -334,6 +337,8 @@ class Tracer:
             return simple_wrapper
 
     def write(self, s):
+        if self.seperated_prefix_each_call :
+            self.prefix = os.environ.get("snooper_prefix", self.prefix )
         s = u'{self.prefix}{s}\n'.format(**locals())
         self._write(s)
 
